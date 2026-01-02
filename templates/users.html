@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management | Healthcare System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-logo">🏥</span>
+            <span class="nav-title">Healthcare System</span>
+        </div>
+        <div class="nav-user">
+            <span class="user-role">👨‍⚕️ Doctor</span>
+            <span class="user-name">{{ session.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="{{ url_for('dashboard') }}" class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('predict') }}" class="menu-item">
+                    <span class="menu-icon">🔍</span>
+                    <span>New Prediction</span>
+                </a>
+                <a href="{{ url_for('history') }}" class="menu-item">
+                    <span class="menu-icon">📋</span>
+                    <span>All Records</span>
+                </a>
+                <a href="{{ url_for('users') }}" class="menu-item active">
+                    <span class="menu-icon">👥</span>
+                    <span>Manage Users</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>👥 User Management</h1>
+                <p class="page-subtitle">Manage system users and roles</p>
+            </div>
+
+            <div class="card">
+                <div class="table-container">
+                    {% if users %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Full Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.full_name }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <span
+                                        class="badge badge-{{ 'low-risk' if user.role == 'Receptionist' else 'medium-risk' if user.role == 'Nurse' else 'high-risk' }}">
+                                        {{ user.role }}
+                                    </span>
+                                </td>
+                                <td>{{ user.created_at[:10] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <p>No users found</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

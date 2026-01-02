@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction History | Healthcare System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-logo">🏥</span>
+            <span class="nav-title">Healthcare System</span>
+        </div>
+        <div class="nav-user">
+            <span class="user-role">{{ '👨‍⚕️' if session.role == 'Doctor' else '👩‍⚕️' if session.role == 'Nurse' else
+                '👨‍💼' }} {{ session.role }}</span>
+            <span class="user-name">{{ session.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="{{ url_for('dashboard') }}" class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('predict') }}" class="menu-item">
+                    <span class="menu-icon">🔍</span>
+                    <span>New Prediction</span>
+                </a>
+                <a href="{{ url_for('history') }}" class="menu-item active">
+                    <span class="menu-icon">📋</span>
+                    <span>History</span>
+                </a>
+                {% if session.role == 'Doctor' %}
+                <a href="{{ url_for('users') }}" class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    <span>Users</span>
+                </a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>📋 Prediction History</h1>
+                <p class="page-subtitle">{{ 'All system predictions' if session.role == 'Doctor' else 'Your prediction
+                    records' }}</p>
+            </div>
+
+            <div class="card">
+                <div class="table-container">
+                    {% if predictions %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Age</th>
+                                <th>Room</th>
+                                <th>Billing</th>
+                                <th>Condition</th>
+                                <th>Risk Level</th>
+                                {% if session.role == 'Doctor' %}
+                                <th>By</th>
+                                {% endif %}
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pred in predictions %}
+                            <tr>
+                                <td>{{ pred.patient_name }}</td>
+                                <td>{{ pred.age }}</td>
+                                <td>{{ pred.room_number }}</td>
+                                <td>${{ "%.2f"|format(pred.billing_amount) }}</td>
+                                <td>{{ pred.medical_condition }}</td>
+                                <td>
+                                    <span class="badge badge-{{ pred.risk_level.lower().replace(' ', '-') }}">
+                                        {{ pred.risk_level }}
+                                    </span>
+                                </td>
+                                {% if session.role == 'Doctor' %}
+                                <td>{{ pred.user_name }}</td>
+                                {% endif %}
+                                <td>{{ pred.created_at[:16] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <p>No predictions found</p>
+                        <a href="{{ url_for('predict') }}" class="btn-primary">Make First Prediction</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

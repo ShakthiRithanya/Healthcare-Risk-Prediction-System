@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Prediction | Healthcare System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-logo">🏥</span>
+            <span class="nav-title">Healthcare System</span>
+        </div>
+        <div class="nav-user">
+            <span class="user-role">{{ '👨‍⚕️' if session.role == 'Doctor' else '👩‍⚕️' if session.role == 'Nurse' else
+                '👨‍💼' }} {{ session.role }}</span>
+            <span class="user-name">{{ session.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="{{ url_for('dashboard') }}" class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('predict') }}" class="menu-item active">
+                    <span class="menu-icon">🔍</span>
+                    <span>{{ 'New Prediction' if session.role == 'Doctor' else 'New Assessment' if session.role ==
+                        'Nurse' else 'Registration' }}</span>
+                </a>
+                <a href="{{ url_for('history') }}" class="menu-item">
+                    <span class="menu-icon">📋</span>
+                    <span>{{ 'All Records' if session.role == 'Doctor' else 'My Records' }}</span>
+                </a>
+                {% if session.role == 'Doctor' %}
+                <a href="{{ url_for('users') }}" class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    <span>Manage Users</span>
+                </a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container" style="max-width: 1200px; margin: 0 auto;">
+                <!-- Header -->
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo">🏥</div>
+                        <div>
+                            <h1>Healthcare Risk Prediction</h1>
+                            <p class="subtitle">AI-Powered Medical Assessment System</p>
+                        </div>
+                    </div>
+                </header>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" style="margin-bottom: 2rem;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <!-- Main Grid -->
+                <div class="grid">
+                    <!-- Prediction Form -->
+                    <div class="card form-card">
+                        <h2>Patient Information</h2>
+                        <form method="POST" id="predictionForm">
+                            <!-- Patient Name -->
+                            <div class="form-group">
+                                <label for="patient_name">👤 Patient Name</label>
+                                <input type="text" id="patient_name" name="patient_name" required
+                                    placeholder="Enter patient name">
+                            </div>
+
+                            <!-- Age -->
+                            <div class="form-group">
+                                <label for="age">🎂 Age</label>
+                                <input type="number" id="age" name="age" min="0" max="120" required
+                                    placeholder="Enter age">
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="form-group">
+                                <label for="gender">⚧ Gender</label>
+                                <select id="gender" name="gender" required>
+                                    <option value="">Select gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+
+                            <!-- Blood Type -->
+                            <div class="form-group">
+                                <label for="blood_type">🩸 Blood Type</label>
+                                <select id="blood_type" name="blood_type" required>
+                                    <option value="">Select blood type</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+
+                            <!-- Medical Condition -->
+                            <div class="form-group">
+                                <label for="medical_condition">🏥 Medical Condition</label>
+                                <select id="medical_condition" name="medical_condition" required>
+                                    <option value="">Select medical condition</option>
+                                    <option value="Diabetes">Diabetes</option>
+                                    <option value="Hypertension">Hypertension</option>
+                                    <option value="Asthma">Asthma</option>
+                                    <option value="Arthritis">Arthritis</option>
+                                    <option value="Cancer">Cancer</option>
+                                    <option value="Obesity">Obesity</option>
+                                </select>
+                            </div>
+
+                            <!-- Admission Type -->
+                            <div class="form-group">
+                                <label for="admission_type">🚑 Admission Type</label>
+                                <select id="admission_type" name="admission_type" required>
+                                    <option value="">Select admission type</option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="Elective">Elective</option>
+                                    <option value="Urgent">Urgent</option>
+                                </select>
+                            </div>
+
+                            <!-- Medication -->
+                            <div class="form-group">
+                                <label for="medication">💊 Medication</label>
+                                <select id="medication" name="medication" required>
+                                    <option value="">Select medication</option>
+                                    <option value="Aspirin">Aspirin</option>
+                                    <option value="Ibuprofen">Ibuprofen</option>
+                                    <option value="Penicillin">Penicillin</option>
+                                    <option value="Paracetamol">Paracetamol</option>
+                                    <option value="Lipitor">Lipitor</option>
+                                </select>
+                            </div>
+
+                            <!-- Insurance Provider -->
+                            <div class="form-group">
+                                <label for="insurance_provider">🛡️ Insurance Provider</label>
+                                <select id="insurance_provider" name="insurance_provider" required>
+                                    <option value="">Select insurance provider</option>
+                                    <option value="Blue Cross">Blue Cross</option>
+                                    <option value="Aetna">Aetna</option>
+                                    <option value="Cigna">Cigna</option>
+                                    <option value="UnitedHealthcare">UnitedHealthcare</option>
+                                    <option value="Medicare">Medicare</option>
+                                </select>
+                            </div>
+
+                            <!-- Room Number -->
+                            <div class="form-group">
+                                <label for="room_number">🚪 Room Number</label>
+                                <input type="number" id="room_number" name="room_number" min="100" max="500" required
+                                    placeholder="Enter room number">
+                            </div>
+
+                            <!-- Billing Amount -->
+                            <div class="form-group">
+                                <label for="billing_amount">💰 Billing Amount ($)</label>
+                                <input type="number" id="billing_amount" name="billing_amount" min="0" step="0.01"
+                                    required placeholder="Enter billing amount">
+                            </div>
+
+                            <button type="submit" class="submit-btn" id="submitBtn">
+                                <span class="btn-text">Predict Risk Level</span>
+                                <span class="btn-icon">🔍</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Info Card -->
+                    <div class="card info-card">
+                        <h2>ℹ️ About This System</h2>
+                        <div class="info-content">
+                            <div class="info-item">
+                                <div class="info-icon">🤖</div>
+                                <div>
+                                    <h3>Machine Learning</h3>
+                                    <p>Uses advanced K-means clustering with PCA for accurate risk assessment</p>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">🎯</div>
+                                <div>
+                                    <h3>Risk Categories</h3>
+                                    <p>Classifies patients into Low, Medium, or High risk levels</p>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">🔒</div>
+                                <div>
+                                    <h3>Data Privacy</h3>
+                                    <p>All patient information is securely processed and stored</p>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">⚡</div>
+                                <div>
+                                    <h3>Instant Results</h3>
+                                    <p>Get immediate risk assessment results</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Section -->
+                {% if result %}
+                <div class="result-container" id="resultSection">
+                    <div class="result-card result-{{ result.lower().replace(' ', '-') }}">
+                        <div class="result-icon">
+                            {% if result == "Low Risk" %}
+                            ✅
+                            {% elif result == "Medium Risk" %}
+                            ⚠️
+                            {% else %}
+                            🚨
+                            {% endif %}
+                        </div>
+                        <h2 class="result-title">{{ result }}</h2>
+                        <p class="result-description">
+                            {% if result == "Low Risk" %}
+                            The patient shows low risk factors. Continue with standard care procedures and regular
+                            monitoring.
+                            {% elif result == "Medium Risk" %}
+                            The patient shows moderate risk factors. Enhanced monitoring and preventive care measures
+                            recommended.
+                            {% else %}
+                            The patient shows high risk factors. Immediate medical attention and comprehensive care plan
+                            recommended.
+                            {% endif %}
+                        </p>
+                        <div class="result-actions">
+                            <a href="{{ url_for('predict') }}" class="btn-secondary">New Prediction</a>
+                            <a href="{{ url_for('history') }}" class="btn-primary">View History</a>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    // Smooth scroll to result
+                    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                </script>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

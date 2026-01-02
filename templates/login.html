@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Healthcare Risk Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo">🏥</div>
+                <h1>Welcome Back</h1>
+                <p class="subtitle">Login to Healthcare Risk Prediction System</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="username">👤 Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">🔒 Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <span>🔓 Login</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign up here</a></p>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h2>🏥 Healthcare Risk Prediction</h2>
+            <p>AI-powered patient risk assessment system for medical professionals</p>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">👨‍⚕️</div>
+                    <div class="feature-text">
+                        <h3>For Doctors</h3>
+                        <p>Full access to all patient records and analytics</p>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">👩‍⚕️</div>
+                    <div class="feature-text">
+                        <h3>For Nurses</h3>
+                        <p>Patient assessment and risk prediction tools</p>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">👨‍💼</div>
+                    <div class="feature-text">
+                        <h3>For Receptionists</h3>
+                        <p>Patient registration and basic information management</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

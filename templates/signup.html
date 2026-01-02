@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Healthcare Risk Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo">🏥</div>
+                <h1>Create Account</h1>
+                <p class="subtitle">Join Healthcare Risk Prediction System</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="full_name">👤 Full Name</label>
+                    <input type="text" id="full_name" name="full_name" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="username">🆔 Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Choose a username">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">📧 Email</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="role">👔 Role</label>
+                    <select id="role" name="role" required>
+                        <option value="">Select your role</option>
+                        <option value="Doctor">👨‍⚕️ Doctor</option>
+                        <option value="Nurse">👩‍⚕️ Nurse</option>
+                        <option value="Receptionist">👨‍💼 Receptionist</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">🔒 Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Create a password"
+                        minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">🔒 Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required
+                        placeholder="Confirm your password" minlength="6">
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <span>✨ Create Account</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h2>🎯 Role-Based Access</h2>
+            <p>Each role has customized features and permissions</p>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">👨‍⚕️</div>
+                    <div class="feature-text">
+                        <h3>Doctor</h3>
+                        <ul>
+                            <li>View all patient records</li>
+                            <li>Access complete analytics</li>
+                            <li>Manage user accounts</li>
+                            <li>Full system access</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">👩‍⚕️</div>
+                    <div class="feature-text">
+                        <h3>Nurse</h3>
+                        <ul>
+                            <li>Perform risk assessments</li>
+                            <li>View own predictions</li>
+                            <li>Patient data entry</li>
+                            <li>Basic analytics</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">👨‍💼</div>
+                    <div class="feature-text">
+                        <h3>Receptionist</h3>
+                        <ul>
+                            <li>Patient registration</li>
+                            <li>Basic information entry</li>
+                            <li>View own records</li>
+                            <li>Limited access</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password validation
+        const form = document.querySelector('.auth-form');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm_password');
+
+        form.addEventListener('submit', function (e) {
+            if (password.value !== confirmPassword.value) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                confirmPassword.focus();
+            }
+        });
+    </script>
+</body>
+
+</html>
