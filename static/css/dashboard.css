@@ -115,6 +115,19 @@ body::before {
     min-height: calc(100vh - 73px);
 }
 
+.grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 992px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Sidebar */
 .sidebar {
     width: var(--sidebar-width);
@@ -161,6 +174,7 @@ body::before {
 /* Main Content */
 .main-content {
     flex: 1;
+    display: block;
     padding: 2rem;
     overflow-y: auto;
 }
